@@ -10,7 +10,6 @@
 //   Mod+O/Tab  … オーバービュー
 //   Mod+Q      … ウィンドウを閉じる
 //   Mod+R      … 列幅トグル（全幅 ⇔ 半分）
-//   Mod+1〜9   … ワークスペース
 //   Print      … スクリーンショット
 //
 // キー名が分からないときは `wev` で確認する（SETUP.md Phase 3-5）。
@@ -18,8 +17,54 @@
 // ============================================================
 
 binds {
-    // ここに自分のバインドを書く。
-    // 例:
-    // Mod+Return hotkey-overlay-title="Open Terminal" { spawn "alacritty"; }
-    // Mod+B { spawn "firefox"; }
+    // --------------------------------------------------------
+    // ワークスペース = すべて「名前」で指名する
+    //
+    // 番号（index）参照はモニタローカルで行き先を指名できない。実機で確認済み。
+    // 詳細と根拠は config.kdl のワークスペース節と docs/niri-workspaces.md。
+    // dms/binds.kdl の Mod+1..9 は index 参照なので、ここで名前に張り替える。
+    //
+    // 押下は左手だけで完結させる方針。A S D F が日常の 4 つ。
+    //   Mod+キー       … そのワークスペースへ行く（モニタを越える）
+    //   Mod+Shift+キー … 今の列をそこへ送る（フォーカスも付いていく）
+    // --------------------------------------------------------
+
+    // 日常の 4 つ（ホームポジション）
+    Mod+A hotkey-overlay-title="Workspace: daily browsing"   { focus-workspace "daily"; }
+    Mod+S hotkey-overlay-title="Workspace: work browsing"    { focus-workspace "work"; }
+    Mod+D hotkey-overlay-title="Workspace: Discord"          { focus-workspace "discord"; }
+    Mod+F hotkey-overlay-title="Workspace: Spotify"          { focus-workspace "spotify"; }
+
+    Mod+Shift+A { move-column-to-workspace "daily"; }
+    Mod+Shift+S { move-column-to-workspace "work"; }
+    Mod+Shift+D { move-column-to-workspace "discord"; }
+    Mod+Shift+F { move-column-to-workspace "spotify"; }
+
+    // 役割なしの作業用。1・2 は左（HDMI）、3〜6 は右（DVI）に常設
+    Mod+1 { focus-workspace "1"; }
+    Mod+2 { focus-workspace "2"; }
+    Mod+3 { focus-workspace "3"; }
+    Mod+4 { focus-workspace "4"; }
+    Mod+5 { focus-workspace "5"; }
+    Mod+6 { focus-workspace "6"; }
+
+    Mod+Shift+1 { move-column-to-workspace "1"; }
+    Mod+Shift+2 { move-column-to-workspace "2"; }
+    Mod+Shift+3 { move-column-to-workspace "3"; }
+    Mod+Shift+4 { move-column-to-workspace "4"; }
+    Mod+Shift+5 { move-column-to-workspace "5"; }
+    Mod+Shift+6 { move-column-to-workspace "6"; }
+
+    // Mod+7..9 は DMS の index 参照のまま残置（常設は 6 個までなので実質未使用）
+
+    // --------------------------------------------------------
+    // 上で潰したバインドの引っ越し先
+    //
+    // 捨てたもの:
+    //   Mod+F       maximize-column            … Mod+R（列幅トグル）で足りる
+    //   Mod+Ctrl+F  expand-column-to-available-width … 同上
+    // 移したもの:
+    //   Mod+Shift+F fullscreen-window → Mod+Ctrl+F（これは Mod+R で代替できない）
+    // --------------------------------------------------------
+    Mod+Ctrl+F hotkey-overlay-title="Fullscreen" { fullscreen-window; }
 }

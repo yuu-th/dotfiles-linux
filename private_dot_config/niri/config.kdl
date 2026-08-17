@@ -72,6 +72,69 @@ layout {
     }
 }
 
+// ------------------------------------------------------------
+// ワークスペース（自分の領域。DMS は workspace を一切宣言しない）
+//
+// 【思想】ワークスペースが第一級の器で、モニタは「それが今たまたま乗っている場所」。
+//   窓がモニタに属してワークスペースがその下にある、ではない。
+//   niri に move-workspace-to-monitor-* があるのがその証拠。
+//   → だから移動は「隣のモニタへ」ではなく「あのワークスペースへ」で指名する。
+//
+// 【実機で確かめた 2 つの事実】2026-08-18
+//   ① index 参照はモニタローカル。両モニタに idx 1 が同時に存在する。
+//      DVI にフォーカス中の `focus-workspace 1` は DVI の 1 番目に行き、
+//      HDMI の 1 番目には辿り着けない。番号は行き先を指名できない。
+//   ② 名前参照はグローバルで、モニタを越える。
+//      HDMI 側のワークスペースに名前を付け、DVI から `focus-workspace <名前>`
+//      → モニタのフォーカスごと HDMI へ飛んだ。
+//      move-column-to-workspace も同じ参照解決を使う。
+//
+//   よって「行き先を選べる移動」は名前付きワークスペースでしか表現できない。
+//
+//   ③ 参照は KDL の型で index / 名前に分岐する。裸の数値 = index、
+//      引用符付き = 名前。`focus-workspace 300` は「number too large to fit in
+//      target type」で落ちるが `focus-workspace "300"` は通ることで確認した。
+//      → ここの "1"〜"6" は引用符が必須。外すと index 参照になり意味が変わる。
+//      ※ CLI（niri msg action focus-workspace 1）は型が無いので index 優先に
+//        なり、名前 "1" には届かない。CLI から名前 "1" を指すことはできない。
+//
+//   詳細は docs/niri-workspaces.md。
+//
+// 【配置】ユーザーの呼び方: 1 枚目 = 右 = DVI-D-1（常時接続）
+//                          2 枚目 = 左 = HDMI-A-1（KVM で MacBook と共有）
+//   HDMI が切れている間は open-on-output の指定先が無いので、
+//   niri が残っている出力（DVI）へ寄せる。復帰時の挙動は未検証（LEDGER 参照）。
+//
+// ここで宣言したワークスペースは常設になる（空でも消えない）。
+// 宣言していないものは従来どおり動的（空になると消える）。
+// ------------------------------------------------------------
+
+// 【宣言順】起動時は宣言順どおりに上から並ぶ（入れ子 niri で検証、2026-08-18）。
+//   逆順になるのは「稼働中に宣言を足して再読み込みしたとき」だけで、
+//   その場合は先頭へ挿入される。既存の名前付きワークスペースは再読み込みでは
+//   並び替わらないので、途中で足して順序を直したいなら
+//   move-workspace-to-index で手で直すか、ログインし直す。
+
+// 2 枚目（左・HDMI-A-1）。1 / 2 は役割なしの作業用
+workspace "1" { open-on-output "HDMI-A-1"; }
+workspace "2" { open-on-output "HDMI-A-1"; }
+workspace "daily" { open-on-output "HDMI-A-1"; }   // Mod+A 日常ブラウジング
+workspace "work"  { open-on-output "HDMI-A-1"; }   // Mod+S 仕事ブラウジング
+
+// 1 枚目（右・DVI-D-1）
+workspace "3" { open-on-output "DVI-D-1"; }
+workspace "4" { open-on-output "DVI-D-1"; }
+workspace "5" { open-on-output "DVI-D-1"; }
+workspace "6" { open-on-output "DVI-D-1"; }
+workspace "discord" { open-on-output "DVI-D-1"; }  // Mod+D
+workspace "spotify" { open-on-output "DVI-D-1"; }  // Mod+F ※Spotify は未導入
+
+// Discord は常に自分のワークスペースで開く（app-id は StartupWMClass=discord）
+window-rule {
+    match app-id=r#"^discord$"#
+    open-on-workspace "discord"
+}
+
 // XWayland。Steam などの X11 アプリに必要（SETUP.md Phase 5-4）
 xwayland-satellite {
     path "/usr/bin/xwayland-satellite"
