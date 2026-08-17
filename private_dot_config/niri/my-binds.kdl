@@ -2,13 +2,14 @@
 // 自分のキーバインド — yuuth-home-desk
 //
 // config.kdl の最後に include されるので、ここでの定義が
-// dms/binds.kdl のバインドを上書きする。
+// dms/binds.kdl のバインドを上書きする（競合時は後勝ち）。
 //
 // DMS が既に押さえているキー（重複させると分かりにくくなる）:
 //   Mod+Space  … アプリランチャー（← fcitx5 の代替切替キーには使えない）
 //   Mod+T      … alacritty
 //   Mod+O/Tab  … オーバービュー
 //   Mod+Q      … ウィンドウを閉じる
+//   Mod+R      … 列幅トグル（全幅 ⇔ 半分）
 //   Mod+1〜9   … ワークスペース
 //   Print      … スクリーンショット
 //
@@ -17,8 +18,18 @@
 // ============================================================
 
 binds {
-    // ここに自分のバインドを書く。
-    // 例:
-    // Mod+Return hotkey-overlay-title="Open Terminal" { spawn "alacritty"; }
-    // Mod+B { spawn "firefox"; }
+    // ---- ゲームモード ----
+    //
+    // 2 枚目のモニタ（HDMI-A-1）をオフにする。
+    //
+    // niri にはカーソル拘束の機能が無く、2 画面だとフルスクリーンゲームから
+    // ポインタが隣のモニタへ抜ける。モニタを 1 枚にすれば抜ける先が消えるので、
+    // gamescope の --force-grab-cursor が不要になり、
+    // ゲームごとに起動オプションを設定する手間もなくなる。
+    //
+    // もう一度押すと元に戻る。niri を再起動しても元に戻る
+    // （niri msg output は設定ファイルに保存されない一時変更のため）。
+    Mod+Shift+G repeat=false hotkey-overlay-title="ゲームモード: 2枚目のモニタを切り替え" {
+        spawn "niri-toggle-output";
+    }
 }

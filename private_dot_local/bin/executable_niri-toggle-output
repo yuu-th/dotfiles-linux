@@ -1,0 +1,61 @@
+#!/usr/bin/env bash
+# niri の出力を 1 つオン/オフする。
+#
+# 目的: ゲーム中に 2 枚目のモニタを消して、フルスクリーンゲームから
+#       ポインタが抜けるのを防ぐ（niri にはカーソル拘束が無いため）。
+#       モニタが 1 枚なら抜ける先が無いので、gamescope の
+#       --force-grab-cursor が不要になる。
+#
+# 使い方:
+#   niri-toggle-output              HDMI-A-1 をトグル
+#   niri-toggle-output DVI-D-1      指定した出力をトグル
+#   niri-toggle-output --status     現在の状態を表示するだけ（変更しない）
+#
+# 注意: niri msg output は一時的な変更で、設定ファイルには保存されない。
+#       niri を再起動すれば元に戻る。
+set -euo pipefail
+
+OUT="HDMI-A-1"
+STATUS_ONLY=0
+
+for a in "$@"; do
+    case "$a" in
+        --status) STATUS_ONLY=1 ;;
+        -*)       echo "不明なオプション: $a" >&2; exit 2 ;;
+        *)        OUT="$a" ;;
+    esac
+done
+
+# logical が null なら無効、オブジェクトなら有効
+state=$(niri msg --json outputs | python3 -c "
+import json, sys
+outs = json.load(sys.stdin)
+o = outs.get('$OUT')
+if o is None:
+    print('missing')
+else:
+    print('off' if o.get('logical') is None else 'on')
+")
+
+case "$state" in
+    missing)
+        echo "出力 '$OUT' が見つからない。利用可能な出力:" >&2
+        niri msg outputs | grep '^Output' >&2
+        exit 1
+        ;;
+esac
+
+if [ "$STATUS_ONLY" -eq 1 ]; then
+    echo "$OUT: $state"
+    exit 0
+fi
+
+if [ "$state" = "on" ]; then
+    niri msg output "$OUT" off
+    msg="$OUT をオフにしました（ゲームモード）"
+else
+    niri msg output "$OUT" on
+    msg="$OUT をオンに戻しました"
+fi
+
+command -v notify-send >/dev/null && notify-send -a niri "モニタ切り替え" "$msg" || echo "$msg"
