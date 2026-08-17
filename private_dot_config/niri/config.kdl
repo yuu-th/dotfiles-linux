@@ -129,16 +129,23 @@ workspace "6" { open-on-output "DVI-D-1"; }
 workspace "discord" { open-on-output "DVI-D-1"; }  // Mod+D
 workspace "spotify" { open-on-output "DVI-D-1"; }  // Mod+F
 
-// 常に自分のワークスペースで開く。app-id は .desktop の StartupWMClass から取った。
-// ブラウザは daily / work が同じアプリ（Brave Origin）で app-id が同一なので
+// 常に自分のワークスペースで開く。
+//
+// 【罠】.desktop の StartupWMClass を信じてはいけない。実機で確認（2026-08-18）。
+//   Spotify は StartupWMClass=spotify だが実際の app-id は "Spotify"（大文字 S）。
+//   `^spotify$` では一致せず、ルールが無言で素通りして無名ワークスペースに開いた。
+//   正規表現は必ず (?i) で大文字小文字を無視させる。
+//   確認方法: niri msg -j windows で app_id を直接見る。
+//
+// ブラウザは daily / work が同じアプリ（app-id はどちらも brave-origin）なので
 // ルールでは区別できない。手で置く。
 window-rule {
-    match app-id=r#"^discord$"#
+    match app-id=r#"(?i)^discord$"#
     open-on-workspace "discord"
 }
 
 window-rule {
-    match app-id=r#"^spotify$"#
+    match app-id=r#"(?i)^spotify$"#
     open-on-workspace "spotify"
 }
 
