@@ -1,0 +1,24 @@
+// ============================================================
+// 自分のキーバインド — yuuth-home-desk
+//
+// config.kdl の最後に include されるので、ここでの定義が
+// dms/binds.kdl のバインドを上書きする。
+//
+// DMS が既に押さえているキー（重複させると分かりにくくなる）:
+//   Mod+Space  … アプリランチャー（← fcitx5 の代替切替キーには使えない）
+//   Mod+T      … alacritty
+//   Mod+O/Tab  … オーバービュー
+//   Mod+Q      … ウィンドウを閉じる
+//   Mod+1〜9   … ワークスペース
+//   Print      … スクリーンショット
+//
+// キー名が分からないときは `wev` で確認する（SETUP.md Phase 3-5）。
+// 一覧は Mod+Shift+Slash（ホットキーオーバーレイ）でも見られる。
+// ============================================================
+
+binds {
+    // ここに自分のバインドを書く。
+    // 例:
+    // Mod+Return hotkey-overlay-title="Open Terminal" { spawn "alacritty"; }
+    // Mod+B { spawn "firefox"; }
+}
