@@ -127,12 +127,19 @@ workspace "4" { open-on-output "DVI-D-1"; }
 workspace "5" { open-on-output "DVI-D-1"; }
 workspace "6" { open-on-output "DVI-D-1"; }
 workspace "discord" { open-on-output "DVI-D-1"; }  // Mod+D
-workspace "spotify" { open-on-output "DVI-D-1"; }  // Mod+F ※Spotify は未導入
+workspace "spotify" { open-on-output "DVI-D-1"; }  // Mod+F
 
-// Discord は常に自分のワークスペースで開く（app-id は StartupWMClass=discord）
+// 常に自分のワークスペースで開く。app-id は .desktop の StartupWMClass から取った。
+// ブラウザは daily / work が同じアプリ（Brave Origin）で app-id が同一なので
+// ルールでは区別できない。手で置く。
 window-rule {
     match app-id=r#"^discord$"#
     open-on-workspace "discord"
+}
+
+window-rule {
+    match app-id=r#"^spotify$"#
+    open-on-workspace "spotify"
 }
 
 // XWayland。Steam などの X11 アプリに必要（SETUP.md Phase 5-4）
