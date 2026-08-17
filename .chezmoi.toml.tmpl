@@ -1,0 +1,8 @@
+# chezmoi 自身の設定。`chezmoi init` 時にこのテンプレートから
+# ~/.config/chezmoi/chezmoi.toml が生成される。
+#
+# umask: chezmoi は適用先のファイルモードをこの umask から算出する。
+#        Ubuntu の既定 umask は 0002 で、放っておくと dotfiles が
+#        グループ書き込み可（664 / 775）になる。Ubuntu の skel が配る
+#        .bashrc は 644 なので、それに揃える。
+umask = 0o022
