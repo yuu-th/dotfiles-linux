@@ -1,0 +1,20 @@
+[Unit]
+Description=Fcitx5 Input Method
+Documentation=man:fcitx5(1)
+# graphical-session.target の後に順序付けする。
+# niri.desktop の Exec が niri-session のため niri #2283 の条件に該当し、
+# spawn-at-startup だと XWayland アプリ（Steam）から IME が使えなくなる。
+PartOf=graphical-session.target
+After=graphical-session.target
+Requisite=graphical-session.target
+
+[Service]
+Type=dbus
+BusName=org.fcitx.Fcitx5
+ExecStart=/usr/bin/fcitx5
+Restart=on-failure
+RestartSec=2
+TimeoutStopSec=10
+
+[Install]
+WantedBy=graphical-session.target

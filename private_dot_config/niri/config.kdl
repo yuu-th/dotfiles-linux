@@ -69,6 +69,24 @@ screenshot-path "~/Pictures/Screenshots/Screenshot from %Y-%m-%d %H-%M-%S.png"
 prefer-no-csd
 
 // ------------------------------------------------------------
+// 日本語入力（fcitx5 + Mozc）
+//
+// fcitx5 の起動は spawn-at-startup ではなく systemd user unit
+// （~/.config/systemd/user/fcitx5.service）で行う。理由:
+//   - niri.desktop の Exec が niri-session のため niri #2283 に該当し、
+//     spawn-at-startup では XWayland アプリ（Steam）から IME が使えなくなる
+//   - SETUP.md ルール 07「常駐サービスは必ず systemd unit にする」
+//   - GNOME セッション（逃げ道）でも同じ unit で動く
+//
+// niri #3917 回避: 変換候補ウィンドウがタイル扱いされて列を丸ごと占有するのを防ぐ。
+// niri 26.04 では再現しない可能性があるが、無害なので予防的に残す。
+// ------------------------------------------------------------
+window-rule {
+    match app-id="fcitx" title="^Fcitx5 Input Window$"
+    open-floating true
+}
+
+// ------------------------------------------------------------
 // include（DMS 所有領域 → 自分の領域 の順）
 // 後に読まれた定義が優先されるため、my-binds.kdl を最後に置く
 // ------------------------------------------------------------
