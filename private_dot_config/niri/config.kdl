@@ -72,10 +72,28 @@ input {
 // ------------------------------------------------------------
 // レイアウト（自分の領域）
 //
-// 方針: ウィンドウは既定で全幅。半分にしたいときだけ Mod+R で切り替える。
-//   preset-column-widths を「全幅」「半分」の 2 つだけにしてあるため、
-//   Mod+R（switch-preset-column-width）がトグルとして働く。
-//   3 つ目を足すとトグルではなく循環になる。
+// 方針: ウィンドウは既定で全幅。狭くしたいときだけ切り替える。
+//
+// 【トグルではなく「前後」で扱う】2026-08-18 に 2 段 → 4 段へ変更した。
+//
+//   「Mod+R は全幅⇔半分の 2 段トグル、Mod+E は 1/3⇔1/4 の別トグル」を検討したが
+//   niri の設定では書けない。実機で確かめた制約が 3 つ:
+//     ① preset-column-widths は設定全体で 1 本だけ。2 本目（preset-window-widths）は
+//        存在しない（unexpected node。switch-preset-window-width というアクションは
+//        あるが対応する設定ノードが無い）
+//     ② 1 バインドに書けるのは 1 アクションだけ
+//        （only one action is allowed per keybind と明示的に落ちる）
+//     ③ 条件分岐の仕組みが無い。set-column-width も状態を持たない
+//   → 状態を見て分岐するにはスクリプトを spawn するしかないので、それはやめた。
+//
+//   1 本のリストを前後に回す形にした。
+//     Mod+E … switch-preset-column-width       縮小（リストを前に進める）
+//     Mod+R … switch-preset-column-width-back  拡大（リストを後ろに戻す）
+//   全幅⇔半分の往復は行き E・帰り R で 1 打鍵ずつなのでトグル感は残る。
+//   失うのは「R 連打で全幅に戻る」だけ。
+//
+// 並び順を変えると E / R の意味も変わる。**狭くなる順に並べること。**
+// 両端では折り返す（1/4 で E を押すと全幅、全幅で R を押すと 1/4。実測）。
 //
 // gaps / border / focus-ring は DMS が所有するのでここには書かない。
 // ------------------------------------------------------------
@@ -83,8 +101,10 @@ layout {
     default-column-width { proportion 1.0; }
 
     preset-column-widths {
-        proportion 1.0    // 全幅
-        proportion 0.5    // 半分
+        proportion 1.0      // 全幅
+        proportion 0.5      // 半分
+        proportion 0.333    // 3 分割
+        proportion 0.25     // 4 分割
     }
 }
 
