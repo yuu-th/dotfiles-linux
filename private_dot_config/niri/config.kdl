@@ -2,23 +2,29 @@
 // niri config — yuuth-home-desk
 //
 // 正本は chezmoi 管理下（GitHub: yuu-th/dotfiles-linux）。
-// このファイルを直接編集したら `chezmoi add ~/.config/niri/config.kdl` を忘れないこと。
+// このファイルを直接編集したら `chezmoi add ~/.config/niri/config.kdl`。
 //
 // 【所有権の境界】SETUP.md ルール 06
-//   dms/*.kdl  … DMS の自動生成物。絶対に手で編集しない（上書きされる）
-//   このファイル … 自分の領域（入力・出力・起動時プロセス）
-//   my-binds.kdl … 自分のキーバインド。DMS のバインドを上書きする
+//   dms/*.kdl   … DMS の自動生成物。絶対に手で編集しない（上書きされる）
+//   config.kdl  … 自分の領域。DMS が扱わない設定だけを書く
+//   my-binds.kdl … 自分のキーバインド
+//
+// 【DMS に任せているもの】ここには書かない。二重管理になる
+//   出力（モニタの配置・解像度・スケール） → DMS の表示設定 UI
+//   gaps / border / focus-ring / 配色       → dms/layout.kdl, dms/colors.kdl
+//   キーバインド一式                        → dms/binds.kdl
 //
 // 【include の挙動】niri 26.04 で実機検証済み（2026-08-17）
 //   - 同一ファイル内の同名トップレベルブロック重複 → ハードエラー
-//   - include をまたいだ場合 → 統合される（エラーにならない）
+//   - include をまたいだ場合 → 統合される
+//   - 競合したときは「後に読まれた方が勝つ」
 //   - optional=true → ファイルが無くても警告のみで読み込み継続
-//     ※ optional 無しで include 先が欠けると設定全体が読めずログイン不能になる
+//     ※ optional 無しで include 先が欠けると設定全体が読めずログイン不能
 // ============================================================
 
 input {
     keyboard {
-        // HHKB Hybrid（US 配列）。半角/全角キーは無いので IME 切替は Ctrl+Space
+        // HHKB Hybrid（US 配列）。半角/全角キーが無いので IME 切替は Ctrl+Space
         xkb {
             layout "us"
         }
@@ -28,35 +34,30 @@ input {
 
     mouse {
         // Kensington SlimBlade Pro Trackball
-        // 加速の調整が要るようなら accel-profile "flat" を試す
+        // 加速が合わなければ accel-profile "flat" を試す
     }
 
-    // フォーカス移動時にポインタを追従させる。
-    // マルチモニタでポインタを見失いにくくなる（niri 26.04 の機能）
+    // フォーカス移動にポインタを追従させる。2 画面でポインタを見失いにくい
     warp-mouse-to-focus
 }
 
 // ------------------------------------------------------------
-// 出力
+// レイアウト（自分の領域）
 //
-// DVI-D-1 … Linux 専用。常時接続。ここが主モニタ
-// HDMI-A-1 … KVM 切替器で MacBook と共有。切替のたびに disconnect される
+// 方針: ウィンドウは既定で全幅。半分にしたいときだけ Mod+R で切り替える。
+//   preset-column-widths を「全幅」「半分」の 2 つだけにしてあるため、
+//   Mod+R（switch-preset-column-width）がトグルとして働く。
+//   3 つ目を足すとトグルではなく循環になる。
 //
-// niri のワークスペースはモニタごとに独立・動的なので、HDMI-A-1 が切り離されると
-// その上のワークスペースは DVI-D-1 へ退避する。位置を固定しておくと復帰時の
-// 並びが安定する。
-//
-// ※ DMS の表示設定 UI は dms/outputs.kdl に書き込む。そちらで設定した場合は
-//    この 2 ブロックを削ってどちらか一方に寄せること（二重管理を作らない）
+// gaps / border / focus-ring は DMS が所有するのでここには書かない。
 // ------------------------------------------------------------
-output "DVI-D-1" {
-    mode "1920x1080"
-    position x=0 y=0
-}
+layout {
+    default-column-width { proportion 1.0; }
 
-output "HDMI-A-1" {
-    mode "1920x1080"
-    position x=1920 y=0
+    preset-column-widths {
+        proportion 1.0    // 全幅
+        proportion 0.5    // 半分
+    }
 }
 
 // XWayland。Steam などの X11 アプリに必要（SETUP.md Phase 5-4）
@@ -76,10 +77,10 @@ prefer-no-csd
 //   - niri.desktop の Exec が niri-session のため niri #2283 に該当し、
 //     spawn-at-startup では XWayland アプリ（Steam）から IME が使えなくなる
 //   - SETUP.md ルール 07「常駐サービスは必ず systemd unit にする」
-//   - GNOME セッション（逃げ道）でも同じ unit で動く
+//   - GNOME セッション（逃げ道）でも同じ unit が使える
 //
-// niri #3917 回避: 変換候補ウィンドウがタイル扱いされて列を丸ごと占有するのを防ぐ。
-// niri 26.04 では再現しない可能性があるが、無害なので予防的に残す。
+// niri #3917 回避: 変換候補ウィンドウがタイル扱いされて列を占有するのを防ぐ。
+// niri 26.04 では再現しない可能性があるが無害なので予防的に残す。
 // ------------------------------------------------------------
 window-rule {
     match app-id="fcitx" title="^Fcitx5 Input Window$"
@@ -87,8 +88,10 @@ window-rule {
 }
 
 // ------------------------------------------------------------
-// include（DMS 所有領域 → 自分の領域 の順）
-// 後に読まれた定義が優先されるため、my-binds.kdl を最後に置く
+// include
+//
+// 順序に意味がある。後に読まれた定義が勝つので、
+// DMS 所有領域 → 自分の領域 の順に並べること。
 // ------------------------------------------------------------
 include "dms/colors.kdl"      optional=true
 include "dms/layout.kdl"      optional=true
@@ -96,6 +99,7 @@ include "dms/alttab.kdl"      optional=true
 include "dms/cursor.kdl"      optional=true
 include "dms/outputs.kdl"     optional=true
 include "dms/windowrules.kdl" optional=true
+include "dms/wpblur.kdl"      optional=true
 include "dms/binds.kdl"       optional=true
 
 include "my-binds.kdl"        optional=true
