@@ -1,0 +1,23 @@
+{
+    "//comment": "NVIDIA + niri の約 1GiB VRAM リーク対策（SETUP.md Phase 5-1 / niri wiki の Nvidia ページ）。GTX 1050 Ti は VRAM 4GB しかないため影響が大きい。",
+    "profiles": [
+        {
+            "name": "niri-vram-leak-workaround",
+            "settings": [
+                {
+                    "key": "GLVidHeapReuseRatio",
+                    "value": 0
+                }
+            ]
+        }
+    ],
+    "rules": [
+        {
+            "pattern": {
+                "feature": "procname",
+                "matches": "niri"
+            },
+            "profile": "niri-vram-leak-workaround"
+        }
+    ]
+}
