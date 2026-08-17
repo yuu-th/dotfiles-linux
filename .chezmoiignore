@@ -4,6 +4,15 @@
 # OAuth トークン。絶対に入れない
 .claude.json
 
+# ~/.claude/ は許可リスト方式にする。
+# このリポジトリは public。~/.claude/ には OAuth トークン（.credentials.json）と
+# 会話ログ（history.jsonl / projects/ / sessions/ / shell-snapshots/）が同居していて、
+# ディレクトリ自体が chezmoi 管理下にあるため `chezmoi add ~/.claude` を一度打つだけで
+# 全部が public リポジトリに入る。除外リスト方式では新しいファイルが増えたときに漏れる。
+.claude/*
+!.claude/CLAUDE.md
+!.claude/settings.json
+
 # DMS の自動生成物（第 2-2 節 / ルール 06）
 .config/niri/dms/**
 
