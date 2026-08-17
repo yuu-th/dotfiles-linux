@@ -1,0 +1,15 @@
+# SETUP.md 第 8-6 節: chezmoi の管理対象から外すもの
+# 形式は .gitignore と同じ。インラインコメントは書かないこと。
+
+# OAuth トークン。絶対に入れない
+.claude.json
+
+# DMS の自動生成物（第 2-2 節 / ルール 06）
+.config/niri/dms/**
+
+# キャッシュとゲームデータ
+.cache/**
+.local/share/Steam/**
+
+# セットアップ時のバックアップ
+.bashrc.bak-before-setup
