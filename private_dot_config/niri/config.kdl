@@ -32,9 +32,21 @@ input {
         repeat-rate 40
     }
 
-    mouse {
-        // Kensington SlimBlade Pro Trackball
-        // 加速が合わなければ accel-profile "flat" を試す
+    // Kensington SlimBlade Pro は udev が ID_INPUT_TRACKBALL=1 を付けるため、
+    // niri は mouse{} ではなく trackball{} の設定を適用する。
+    // ここを mouse{} に書いても一切効かない（実機で確認、2026-08-17）。
+    //   udevadm info /dev/input/event14 | grep ID_INPUT
+    trackball {
+        // デバイス側の DPI 切替を最低にしても速すぎたため、niri 側でも落とす。
+        //
+        // accel-profile は書かない = libinput 既定の "adaptive"（加速あり）。
+        // トラックボールは指の可動域が狭く、画面端まで運ぶのに加速が要る。
+        // 切り分けのため一時的に "flat"（加速なし）で試したが、一定速度で
+        // 間延びするので既定に戻した。
+        //
+        // accel-speed は adaptive では単純な倍率ではなく加速カーブ全体のシフト。
+        // 範囲は -1.0（最遅）〜 1.0、0.0 が既定。遅すぎたら 0 に近づける。
+        accel-speed -0.3
     }
 
     // フォーカス移動にポインタを追従させる。2 画面でポインタを見失いにくい
