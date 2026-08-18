@@ -1,0 +1,25 @@
+# ccniri — niri のウィンドウとして claude セッションを保存・復元する
+#   本体は yuu-th/ccniri（public）で管理し、ここからは参照するだけにする。
+#   dotfiles に実体を置くと二重管理になるため。
+#   更新したいときは `chezmoi apply --refresh-externals`。
+
+[".local/bin/ccniri"]
+    type = "file"
+    url = "https://raw.githubusercontent.com/yuu-th/ccniri/main/ccniri"
+    executable = true
+    refreshPeriod = "168h"
+
+[".config/systemd/user/ccniri-save.service"]
+    type = "file"
+    url = "https://raw.githubusercontent.com/yuu-th/ccniri/main/units/ccniri-save.service"
+    refreshPeriod = "168h"
+
+[".config/systemd/user/ccniri-save.timer"]
+    type = "file"
+    url = "https://raw.githubusercontent.com/yuu-th/ccniri/main/units/ccniri-save.timer"
+    refreshPeriod = "168h"
+
+[".config/systemd/user/ccniri-save-on-exit.service"]
+    type = "file"
+    url = "https://raw.githubusercontent.com/yuu-th/ccniri/main/units/ccniri-save-on-exit.service"
+    refreshPeriod = "168h"
