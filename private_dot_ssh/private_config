@@ -1,0 +1,10 @@
+# yutanomacbook-air (M1 MacBook Air)
+#   LAN IP 宛に接続するとスリープブロキシ経由で起床する（約2秒）。
+#   Tailscale IP (100.78.232.12) は Mac がスリープ中は届かないので使わない。
+#   前提: Mac が AC 電源接続 / 同一 LAN 上から接続すること。
+Host mac
+    HostName 192.168.10.191
+    User yuta
+    ServerAliveInterval 30
+    ServerAliveCountMax 6
+    SetEnv TERM=xterm-256color
