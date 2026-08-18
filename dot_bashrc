@@ -128,3 +128,15 @@ command -v starship >/dev/null && eval "$(starship init bash)"
 command -v zoxide   >/dev/null && eval "$(zoxide init bash)"
 command -v atuin    >/dev/null && eval "$(atuin init bash)"
 # ---- ここまで ----
+
+# ---- yuuth-home-desk : 全経路まとめて更新 ----
+# 実体は bootstrap の scripts/update-all.sh（make update / make clean と同じもの）。
+#   up            更新（apt / mise / Flatpak）
+#   up --clean    更新 + 不要パッケージの掃除（月次）
+#   up --yes      NVIDIA ドライバ更新の確認を飛ばす
+#   up --help     使い方
+# bootstrap を clone していないマシンでは定義しない。
+if [ -x "$HOME/bootstrap/scripts/update-all.sh" ]; then
+  up() { "$HOME/bootstrap/scripts/update-all.sh" "$@"; }
+fi
+# ---- ここまで ----
