@@ -1,7 +1,7 @@
 {
   "tui": "fullscreen",
   "voice": {
-    "enabled": false,
+    "enabled": true,
     "mode": "hold"
   },
   "theme": "auto",
@@ -35,5 +35,5 @@
       "**Org-specific CLIs**: None configured"
     ]
   },
-  "voiceEnabled": false
+  "voiceEnabled": true
 }
