@@ -1,0 +1,24 @@
+#!/bin/sh
+# Nautilus script — 選択したファイル / フォルダを mac:~/Downloads へ送る
+#
+# 右クリック → Scripts → "Send to mac (Downloads)" で呼ばれる。
+# 選択されたパスは引数で渡ってくる（$NAUTILUS_SCRIPT_SELECTED_FILE_PATHS も同内容）。
+# 接続先は ~/.ssh/config の Host mac をそのまま使う
+#   = LAN IP 宛なのでスリープ中の Mac も起床する（Tailscale IP は使わない）。
+set -eu
+
+[ "$#" -gt 0 ] || exit 0
+
+if [ "$#" -eq 1 ]; then
+    what=$(basename -- "$1")
+else
+    what="$# 件"
+fi
+
+notify-send -a "Send to mac" "mac へ送信中" "$what"
+
+if err=$(scp -r -- "$@" mac:Downloads/ 2>&1); then
+    notify-send -a "Send to mac" "mac へ送信完了" "$what → ~/Downloads"
+else
+    notify-send -a "Send to mac" -u critical "mac へ送信失敗" "$err"
+fi
