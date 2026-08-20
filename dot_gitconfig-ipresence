@@ -1,0 +1,6 @@
+# ~/ipresence/ 配下（仕事のリポジトリ）専用の identity。
+# ~/.gitconfig の includeIf から読まれる。
+# kubi-ble の直近コミットがこの author で揃っているため、これに合わせている。
+[user]
+	name = yuta-kato-ipresence
+	email = 275619399+yuta-kato-ipresence@users.noreply.github.com
